@@ -69,6 +69,7 @@ body {
 
 .intro {
     margin-bottom: 100px;
+    text-align: justify;
 }
 
 .message {
