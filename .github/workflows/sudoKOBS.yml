@@ -17,10 +17,9 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.8.6
-      - name: Navigate to folder
-        run: cd generation
       - name: Generate
         run: python generate.py
+        working-directory: ./generation
       - name: Commit files
         run: |
           git config --local user.email "action@github.com"
