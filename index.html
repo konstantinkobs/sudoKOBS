@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <title>SudoKOBS</title>
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#fe5f55">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com"> 
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&family=Amatic+SC&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <div class="circle"></div>
+        <div class="container">
+            <h1 class="title">SudoKOBS</h1>
+            <p class="intro">
+                Liebe Oma, in 91 Jahren hast du Sudoku nun durchgespielt, kennst alle Varianten, jegliche Schwierigkeitsgrade und Tücken des Spiels.
+                Damit du die nächsten Jahre weiter gefordert bist, haben wir uns etwas Neues überlegt: <b>SudoKOBS</b>.
+                Täglich ein neues Rätsel, drei Schwierigkeitsgrade, neun bekannte Gesichter.
+                Einfach in der Leiste oberhalb des Spielfelds eins von unseren Gesichtern auswählen und danach die Stelle im Rätsel antippen, wo das gewählte Gesicht eingefügt werden soll.
+                Bei falscher Eingabe einfach nochmal tippen, dann verschwindet das Gesicht wieder. Das Ziel des Spiels ist dir ja bekannt 😊
+                Viel Spaß und Freude!
+            </p>
+
+            <div class="level-container">
+                <span class="description">Schwierigkeitsstufe</span>
+                <div class="levels">
+                    <span class="level" @click="setLevel('easy')" :class="{'set-level': level=='easy'}">Einfach</span>
+                    <span class="level" @click="setLevel('medium')" :class="{'set-level': level=='medium'}">Mittel</span>
+                    <span class="level" @click="setLevel('hard')" :class="{'set-level': level=='hard'}">Schwer</span>
+                </div>
+            </div>
+        
+            <div class="game">
+                <div class="options-container">
+                    <span class="description">Tippe hier auf die Person, die du im SudoKOBS einfügen möchtest.</span>
+                    <div class="options">
+                        <div 
+                            v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
+                            class = "option"
+                            :class="{active: activeOption == num}"
+                            @click="activeOption = num"
+                        >
+                            <img :src="`images/${num}.png`">
+                        </div>
+                    </div>
+                </div>
+    
+                <table class="board">
+                    <tr v-for="(row, rIndex) in grid" :class="{'horizontal-sep': rIndex%3==2}">
+                        <td v-for="(col, cIndex) in row"
+                            :class="{
+                                'vertical-sep': cIndex%3==2,
+                                'set': start[rIndex][cIndex]
+                            }"
+                            @click="fill(rIndex,cIndex)"
+                        >
+                            <img :src="`images/${grid[rIndex][cIndex]}.png`">
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="buttons">
+                    <span class="button" @click="restart()">Neu starten</span>
+                    <span class="button" @click="show()">Lösung anzeigen</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="overlay" v-if="isEnd" @click="isEnd = false">
+            <div class="overlay-inside">
+                <!-- <span class="overlay-close" @click.prevent="isEnd = false">⨉</span> -->
+                <div class="overlay-content" v-if="isCorrect">
+                    <video width="300" height="200" autoplay loop muted>
+                        <source src="images/correct.mov" type="video/quicktime" />
+                    </video>
+                    <div class="message">
+                        Du hast das SudoKOBS gelöst! Super gemacht!
+                    </div>
+                </div>
+
+                <div class="overlay-content" v-if="!isCorrect">
+                    <video width="300" height="200" autoplay loop muted>
+                        <source src="images/wrong.mov" type="video/quicktime" />
+                    </video>
+                    <div class="message">
+                        Leider ist die Lösung nicht ganz richtig. Die falschen Einträge wurden entfernt.
+                    </div>
+                </div>
+
+                <span class="description">Tippe irgendwo zum Schließen</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/mathusummut/confetti.js/confetti.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
