@@ -8,23 +8,28 @@ jobs:
   generate:
     name: Generate Puzzles
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v7
         with:
-          python-version: 3.8
+          ref: main
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+          check-latest: true
       - name: Generate
         run: python generate.py
         working-directory: ./generation
-      - name: Commit files
+      - name: Commit and push files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add -A
+          git add generation/sudoko.json
+          if git diff --cached --quiet; then
+            echo "No puzzle changes to commit."
+            exit 0
+          fi
           git commit -m "New day, new SudoKOBS"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          git push origin HEAD:main
